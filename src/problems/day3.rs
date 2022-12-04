@@ -46,3 +46,21 @@ pub fn day3_pt2() -> i32 {
 
     sum
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::problems::day3::*;
+
+    #[test]
+    fn day3_pt1_test() {
+        let result = day3_pt1();
+        assert_eq!(result, 8349);
+    }
+
+    #[test]
+    fn day3_pt2_test() {
+        let result = day3_pt2();
+        assert_eq!(result, 2681);
+    }
+}

@@ -64,3 +64,21 @@ pub fn day4_pt2() -> i32 {
         .filter(|(assign1, assing2)| assign1.overlap(assing2)) // Keep only lines that contains sections that overlap
         .count() as i32 // Calculate the number of matching lines
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::problems::day4::*;
+
+    #[test]
+    fn day4_pt1_test() {
+        let result = day4_pt1();
+        assert_eq!(result, 448);
+    }
+
+    #[test]
+    fn day4_pt2_test() {
+        let result = day4_pt2();
+        assert_eq!(result, 794);
+    }
+}

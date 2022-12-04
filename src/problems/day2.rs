@@ -121,3 +121,21 @@ pub fn day2_pt2() -> i32 {
         .map(|(opponent_shape, my_shape)| my_shape.play(opponent_shape)) // Play Shapes together and get scores
         .sum() // Sum the results of scores
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::problems::day2::*;
+
+    #[test]
+    fn day2_pt1_test() {
+        let result = day2_pt1();
+        assert_eq!(result, 13484);
+    }
+
+    #[test]
+    fn day2_pt2_test() {
+        let result = day2_pt2();
+        assert_eq!(result, 13433);
+    }
+}

@@ -42,3 +42,19 @@ pub fn day1_pt2() -> i32 {
         .sum()  // sum them
 }
 
+#[cfg(test)]
+mod tests {
+    use crate::problems::day1::*;
+
+    #[test]
+    fn day1_pt1_test() {
+        let result = day1_pt1();
+        assert_eq!(result, 71506);
+    }
+
+    #[test]
+    fn day1_pt2_test() {
+        let result = day1_pt2();
+        assert_eq!(result, 209603);
+    }
+}
