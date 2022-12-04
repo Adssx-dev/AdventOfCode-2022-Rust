@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, prelude::*, BufReader};
+use std::io::{prelude::*, BufReader};
 
 pub fn load_data() -> Vec<i32> {
     let mut vec = vec!(0);
