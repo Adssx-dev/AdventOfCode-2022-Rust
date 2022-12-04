@@ -16,6 +16,7 @@ enum Outcome {
 }
 
 impl Outcome {
+    // Used only for part 2
     pub fn new(c : char) -> Outcome {
         match c {
             'X' => Outcome::Lost,
@@ -97,28 +98,26 @@ impl Shape {
     }
 }
 
-pub fn day2_pt1() {
+pub fn day2_pt1() -> i32 {
     let file = File::open("inputs/day2.txt").unwrap();
     let reader = BufReader::new(file);
 
-    let score : i32 = reader.lines()
-        .map(|line| line.unwrap().chars().collect::<Vec<char>>())
-        .map(|chars| (Shape::new(chars[0]), Shape::new(chars[2])))
-        .map(|(opponent_shape, my_shape)| my_shape.play(opponent_shape))
-        .sum();
-    println!("{}", score);
+    reader.lines()
+        .map(|line| line.unwrap().chars().collect::<Vec<char>>()) // Convert line to vector of chars
+        .map(|chars| (Shape::new(chars[0]), Shape::new(chars[2]))) // Convert chars to Shapes
+        .map(|(opponent_shape, my_shape)| my_shape.play(opponent_shape)) // Play Shapes together and get scores
+        .sum() // Sum the results of scores
 }
 
 
-pub fn day2_pt2() {
+pub fn day2_pt2() -> i32 {
     let file = File::open("inputs/day2.txt").unwrap();
     let reader = BufReader::new(file);
 
-    let score : i32 = reader.lines()
-        .map(|line| line.unwrap().chars().collect::<Vec<char>>())
-        .map(|chars| (Shape::new(chars[0]), Outcome::new(chars[2])))
-        .map(|(opponent_shape, expected_outcome)| (opponent_shape.clone(), Shape::new_from_outcome(opponent_shape, expected_outcome)))
-        .map(|(opponent_shape, my_shape)| my_shape.play(opponent_shape))
-        .sum();
-    println!("{}", score);
+    reader.lines()
+        .map(|line| line.unwrap().chars().collect::<Vec<char>>()) // Convert line to vector of chars
+        .map(|chars| (Shape::new(chars[0]), Outcome::new(chars[2]))) // Convert chars to Shape + Outcome
+        .map(|(opponent_shape, expected_outcome)| (opponent_shape.clone(), Shape::new_from_outcome(opponent_shape, expected_outcome))) // Convert oponent shape + outcome to my shape
+        .map(|(opponent_shape, my_shape)| my_shape.play(opponent_shape)) // Play Shapes together and get scores
+        .sum() // Sum the results of scores
 }

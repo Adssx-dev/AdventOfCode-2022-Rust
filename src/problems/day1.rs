@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
 
+// Loads the data into a vector, each element is the sum of calories for each elf
 pub fn load_data() -> Vec<i32> {
     let mut vec = vec!(0);
 
@@ -21,19 +22,23 @@ pub fn load_data() -> Vec<i32> {
     vec
 }
 
-pub fn day1_pt1() {
+pub fn day1_pt1() -> i32 {
     let vec = load_data();
 
-    println!("{}", vec.iter().max().unwrap());
+    // Get the maximum of calories <=> maximum of the list
+    vec.iter().max().unwrap().clone()
 }
 
-pub fn day1_pt2() {
+pub fn day1_pt2() -> i32 {
     let mut vec = load_data();
 
-    vec.sort_by(|a, b| b.cmp(a));
+    
+    vec.sort_by(|a, b| b.cmp(a)); // Sort descending
+                                             
+                                             
 
-    let top3 : i32 = vec[0..3].iter().sum();
-        
-    println!("{}", top3);
+    vec.iter()
+        .take(3)  // Take first 3 elements
+        .sum()  // sum them
 }
 
