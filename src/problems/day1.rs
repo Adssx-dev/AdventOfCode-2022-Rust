@@ -26,7 +26,7 @@ pub fn day1_pt1() -> i32 {
     let vec = load_data();
 
     // Get the maximum of calories <=> maximum of the list
-    vec.iter().max().unwrap().clone()
+    *vec.iter().max().unwrap()
 }
 
 pub fn day1_pt2() -> i32 {

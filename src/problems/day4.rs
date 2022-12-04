@@ -10,8 +10,8 @@ impl SectionAssignments {
     // Construct a SectionAssignment from an iterator, by only taking first 2 elements
     pub fn from_iter(mut iter : impl Iterator<Item = i32>) -> SectionAssignments {
         SectionAssignments {
-            start:iter.next().unwrap().clone(),
-            end:iter.next().unwrap().clone()
+            start:iter.next().unwrap(),
+            end:iter.next().unwrap()
         }
     }
 
