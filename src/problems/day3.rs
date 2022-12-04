@@ -1,6 +1,5 @@
 use std::fs::File;
-use std::io::{self, prelude::*, BufReader};
-use std::str::Chars;
+use std::io::{prelude::*, BufReader};
 
 pub fn day3_pt1() -> i32 {
     let file = File::open("inputs/day3.txt").unwrap();

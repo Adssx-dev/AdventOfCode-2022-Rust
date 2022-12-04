@@ -16,7 +16,7 @@ pub fn load_data() -> Vec<i32> {
                     *(vec.last_mut().unwrap()) = vec.last().unwrap() + number_as_str.parse::<i32>().unwrap();
                 }
             }
-            Err(E) => panic!("Could not load file"),
+            Err(_) => panic!("Could not load file"),
         }
     }
     vec

@@ -1,12 +1,9 @@
-use problems::day1::{self, day1_pt1};
-use problems::day2::{day2_pt1, day2_pt2};
-
 mod problems;
-use crate::problems::day1::*;
-use crate::problems::day2::*;
-use crate::problems::day3::*;
-use crate::problems::day4::*;
 
+use problems::day1::*;
+use problems::day2::*;
+use problems::day3::*;
+use problems::day4::*;
 
 
 fn main() {
