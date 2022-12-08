@@ -7,6 +7,7 @@ use problems::day4::*;
 use problems::day5::*;
 use problems::day6::*;
 use problems::day7::*;
+use problems::day8::*;
 
 
 fn main() {
@@ -26,6 +27,9 @@ fn main() {
         println!("Day 6 part 2 : {}", day6_pt2());
         println!("Day 7 part 1 : {}", day7_pt1());
         println!("Day 7 part 2 : {}", day7_pt2());
+        println!("Day 7 part 2 : {}", day6_pt2());
+        println!("Day 8 part 1 : {}", day8_pt1());
+        println!("Day 8 part 2 : {}", day8_pt2());
     }
     else {
         
