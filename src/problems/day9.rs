@@ -103,13 +103,10 @@ pub fn day9_pt1 () -> usize {
         .map(|l| Movement::new(l))
         .flatten();
 
-    let mut board = Board::new(1);
+    let mut board = Board::new(2);
 
     for m in movements {
         board.move_head(&m);
-
-        //println!("{:?}", m);
-        //println!("{:?}", board);
     }
     board.unique_positions_count() + 1
 
