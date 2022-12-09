@@ -13,18 +13,17 @@ impl Position {
     }
 
     pub fn move_towards(&mut self, other : &Position) {
-        if other.x > self.x {
-            self.x += 1;
-        }
-        else if other.x < self.x {
-            self.x -= 1;
-        }
-        if other.y > self.y {
-            self.y += 1;
-        }
-        else if other.y < self.y {
-            self.y -= 1;
-        }
+        self.x += match other.x - self.x {
+            v if v < 0 => -1,
+            v if v > 0 => 1,
+            _  => 0
+        };
+
+        self.y += match other.y - self.y {
+            v if v < 0 => -1,
+            v if v > 0 => 1,
+            _  => 0
+        };
     }
 
     pub fn distance(&self, other : &Position) -> i32 {
@@ -40,7 +39,7 @@ struct Movement {
 
 impl Movement {
     pub fn new(line : &str) -> Vec<Movement> {
-        let mut iter = line.chars().into_iter();
+        let mut iter = line.chars();
         let direction = iter.next().unwrap();
         let count = iter.skip(1).collect::<String>().parse::<usize>().unwrap();
         match direction {

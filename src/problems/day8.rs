@@ -177,7 +177,7 @@ pub fn day8_pt2() -> i32 {
         }
     }
 
-    view_forest.iter().flatten().max().unwrap().clone()
+    *view_forest.iter().flatten().max().unwrap()
     
 
 }
