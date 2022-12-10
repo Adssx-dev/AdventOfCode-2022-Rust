@@ -1,6 +1,3 @@
-use std::slice::Iter;
-use std::cmp;
-
 
 pub fn examine_rows(height : usize,width :  usize,  forest : & Vec<Vec<i32>>, bool_forest : &mut Vec<Vec<bool>>) {
     for row in 0..height {

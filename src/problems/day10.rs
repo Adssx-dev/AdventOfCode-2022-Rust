@@ -8,15 +8,8 @@ impl Instruction {
         let first_char = line.chars().next().unwrap();
         match first_char {
             'n' => vec!(Instruction::Noop),
-            'a' => vec!(Instruction::Noop, Instruction::Addx(line.split(' ').skip(1).next().unwrap().parse::<i32>().unwrap())),
+            'a' => vec!(Instruction::Noop, Instruction::Addx(line.split(' ').nth(1).unwrap().parse::<i32>().unwrap())),
             _ => panic!("Error : unexepcetd instruction")
-        }
-    }
-
-    pub fn time_cost(&self) -> u32 {
-        match self {
-            Instruction::Noop => 1,
-            Instruction::Addx(_) => 2
         }
     }
 }
@@ -124,6 +117,6 @@ mod tests {
     #[test]
     fn day10_pt2_test() {
         let result = day10_pt2();
-        assert_eq!(result, 2511);
+        assert_eq!(result, 0); // this is a visual puzzle
     }
 }
