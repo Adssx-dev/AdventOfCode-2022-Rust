@@ -44,8 +44,8 @@ impl Monkey {
         let items_copy = self.items.clone();
         self.items.clear();
         //println!("{:?}", items_copy);
-        items_copy.iter().map(|item| self.inspect_item(item.clone(), divisor))
-            .map(|item| (item.clone(), self.get_target(item)))
+        items_copy.iter().map(|item| self.inspect_item(*item, divisor))
+            .map(|item| (item, self.get_target(item)))
             .collect()
     }
 
@@ -93,7 +93,7 @@ impl Monkey {
                         "old" => Operation::Square,
                         x => Operation::Multiplication(x.parse::<u64>().unwrap()),
                     }
-            x => panic!("Unexpected operation".to_owned() + x)
+            _ => panic!("Unexpected operation")
         }
     }
 
@@ -123,7 +123,6 @@ impl MonkeyGroup {
             let line_idx = i * 7 + 1;
             monkeys.monkeys.push(RefCell::new(Monkey::new(&lines[line_idx..(line_idx+5)])));
         }
-        let all_modulos = monkeys.monkeys.iter().map(|m| m.borrow().divisible_by_condition).collect::<Vec<u64>>();
         monkeys
     }
 
@@ -141,12 +140,12 @@ impl MonkeyGroup {
 pub fn day11_pt1 () -> u64 {
     let file = include_str!("../../inputs/day11.txt");
     let mut monkey_group = MonkeyGroup::new(&file.split('\n').collect::<Vec<&str>>());
-    for i in 0..20 {
+    for _ in 0..20 {
         monkey_group.play_round(None);
     }
     
     let mut scores  : Vec<u64> = monkey_group.monkeys.iter().map(|monkey| monkey.borrow().inspect_count).collect();
-    scores.sort();
+    scores.sort_unstable();
     scores.reverse();
     scores[0] * scores[1]
 }
@@ -158,12 +157,12 @@ pub fn day11_pt2 () -> u64 {
 
     let divisors_product : u64 = monkey_group.monkeys.iter().map(|m| m.borrow().divisible_by_condition).product();
 
-    for i in 0..10000 {
+    for _ in 0..10000 {
         monkey_group.play_round(Some(divisors_product));
     }
     
     let mut scores  : Vec<u64> = monkey_group.monkeys.iter().map(|monkey| monkey.borrow().inspect_count).collect();
-    scores.sort();
+    scores.sort_unstable();
     scores.reverse();
     scores[0] * scores[1]
 }
@@ -182,6 +181,6 @@ mod tests {
     #[test]
     fn day11_pt2_test() {
         let result = day11_pt2();
-        assert_eq!(result, 0); // this is a visual puzzle
+        assert_eq!(result, 23641658401); 
     }
 }
