@@ -25,30 +25,26 @@ pub struct Monkey {
     condition_true_target_monkey : usize, // monkey to which it is sent when condition is true
     condition_false_target_monkey : usize, // monkey to which it is sent when condition is false
     inspect_count : u64,
-    all_divisors : Vec<u64>,
-    index : usize
 }
 
 impl Monkey {
-    pub fn new(lines : &[&str], monkey_count : usize, monkey_index : usize) -> Monkey {
+    pub fn new(lines : &[&str]) -> Monkey {
         Monkey {
-            items : Monkey::load_items(lines[0], monkey_count),
+            items : Monkey::load_items(lines[0]),
             operation : Monkey::load_operation(lines[1]),
             divisible_by_condition : Monkey::parse_last_number(lines[2]),
             condition_true_target_monkey : Monkey::parse_last_number(lines[3]) as usize,
             condition_false_target_monkey : Monkey::parse_last_number(lines[4]) as usize,
             inspect_count : 0,
-            all_divisors : vec!(),
-            index : monkey_index
         }
     }
 
-    pub fn play_turn(&mut self) -> Vec<(u64, usize)> {
+    pub fn play_turn(&mut self, divisor : Option<u64>) -> Vec<(u64, usize)> {
         self.inspect_count += self.items.len() as u64;
         let items_copy = self.items.clone();
         self.items.clear();
         //println!("{:?}", items_copy);
-        items_copy.iter().map(|item| self.inspect_item(item.clone()))
+        items_copy.iter().map(|item| self.inspect_item(item.clone(), divisor))
             .map(|item| (item.clone(), self.get_target(item)))
             .collect()
     }
@@ -65,11 +61,15 @@ impl Monkey {
         }
     }
 
-    fn inspect_item(&self, mut item : u64) -> u64{
-        self.operation.do_operation(item) / 3
+    fn inspect_item(&self, item : u64, divisor : Option<u64>) -> u64 {
+        let result = self.operation.do_operation(item);
+        match divisor {
+            Some(div) => result % div,
+            None => result / 3
+        }
     }
 
-    fn load_items(line : &str, monkey_count : usize) -> Vec<u64> {
+    fn load_items(line : &str) -> Vec<u64> {
         line.split(':')
             .last()
             .unwrap()
@@ -121,18 +121,15 @@ impl MonkeyGroup {
         let monkey_count = lines.len() / 7;
         for i in 0..=monkey_count {
             let line_idx = i * 7 + 1;
-            monkeys.monkeys.push(RefCell::new(Monkey::new(&lines[line_idx..(line_idx+5)], monkey_count+1, i)));
+            monkeys.monkeys.push(RefCell::new(Monkey::new(&lines[line_idx..(line_idx+5)])));
         }
         let all_modulos = monkeys.monkeys.iter().map(|m| m.borrow().divisible_by_condition).collect::<Vec<u64>>();
-        for m in &monkeys.monkeys {
-            m.borrow_mut().all_divisors = all_modulos.clone();
-        }
         monkeys
     }
 
-    pub fn play_round(&mut self) {
+    pub fn play_round(&mut self, divisor : Option<u64>) {
         for m in &self.monkeys {
-            let items_output = m.borrow_mut().play_turn();
+            let items_output = m.borrow_mut().play_turn(divisor);
             for (item, target) in items_output {
                 self.monkeys[target].borrow_mut().give_item(item);
             }
@@ -145,7 +142,7 @@ pub fn day11_pt1 () -> u64 {
     let file = include_str!("../../inputs/day11.txt");
     let mut monkey_group = MonkeyGroup::new(&file.split('\n').collect::<Vec<&str>>());
     for i in 0..20 {
-        monkey_group.play_round();
+        monkey_group.play_round(None);
     }
     
     let mut scores  : Vec<u64> = monkey_group.monkeys.iter().map(|monkey| monkey.borrow().inspect_count).collect();
@@ -155,13 +152,21 @@ pub fn day11_pt1 () -> u64 {
 }
 
 
-pub fn day11_pt2 () -> usize {
+pub fn day11_pt2 () -> u64 {
     let file = include_str!("../../inputs/day11.txt");
+    let mut monkey_group = MonkeyGroup::new(&file.split('\n').collect::<Vec<&str>>());
 
-    0
+    let divisors_product : u64 = monkey_group.monkeys.iter().map(|m| m.borrow().divisible_by_condition).product();
+
+    for i in 0..10000 {
+        monkey_group.play_round(Some(divisors_product));
+    }
+    
+    let mut scores  : Vec<u64> = monkey_group.monkeys.iter().map(|monkey| monkey.borrow().inspect_count).collect();
+    scores.sort();
+    scores.reverse();
+    scores[0] * scores[1]
 }
-
-
 
 
 #[cfg(test)]
@@ -171,7 +176,7 @@ mod tests {
     #[test]
     fn day11_pt1_test() {
         let result = day11_pt1();
-        assert_eq!(result, 0);
+        assert_eq!(result, 102399);
     }
 
     #[test]
