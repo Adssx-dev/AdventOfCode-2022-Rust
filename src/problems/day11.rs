@@ -1,13 +1,13 @@
 use std::cell::RefCell;
 
 enum Operation {
-    Addition(u32),
-    Multiplication(u32),
+    Addition(u64),
+    Multiplication(u64),
     Square
 }
 
 impl Operation {
-    pub fn do_operation(&self, target : u32) -> u32{
+    pub fn do_operation(&self, target : u64) -> u64{
         match self {
             Operation::Addition(operand) => target + operand,
             Operation::Multiplication(operand) => target * operand,
@@ -16,27 +16,16 @@ impl Operation {
     }
 }
 
-#[derive(Clone)]
-struct Item {
-    item_modulos : Vec<u32>
-}
 
-impl Item {
-    pub fn new(initial_value : u32, modulo_count : usize) -> Item {
-        Item {
-            item_modulos : vec!(initial_value; modulo_count),
-        }
-    }
-}
 
 pub struct Monkey {
-    items : Vec<Item>,
+    items : Vec<u64>,
     operation : Operation,
-    divisible_by_condition : u32, 
+    divisible_by_condition : u64, 
     condition_true_target_monkey : usize, // monkey to which it is sent when condition is true
     condition_false_target_monkey : usize, // monkey to which it is sent when condition is false
-    inspect_count : u32,
-    all_divisors : Vec<u32>,
+    inspect_count : u64,
+    all_divisors : Vec<u64>,
     index : usize
 }
 
@@ -54,8 +43,8 @@ impl Monkey {
         }
     }
 
-    pub fn play_turn(&mut self) -> Vec<(Item, usize)> {
-        self.inspect_count += self.items.len() as u32;
+    pub fn play_turn(&mut self) -> Vec<(u64, usize)> {
+        self.inspect_count += self.items.len() as u64;
         let items_copy = self.items.clone();
         self.items.clear();
         //println!("{:?}", items_copy);
@@ -64,33 +53,29 @@ impl Monkey {
             .collect()
     }
 
-    pub fn give_item(&mut self, item : Item) {
+    pub fn give_item(&mut self, item : u64) {
         self.items.push(item);
     }
 
-    fn get_target(&self, item : Item) -> usize {
-        let division_result = item.item_modulos[self.index];
+    fn get_target(&self, item : u64) -> usize {
+        let division_result = item % self.divisible_by_condition;
         match division_result {
             0 => self.condition_true_target_monkey,
             _ => self.condition_false_target_monkey
         }
     }
 
-    fn inspect_item(&self, mut item : Item) -> Item{
-
-        for idx in 0..item.item_modulos.len() {
-            item.item_modulos[idx] = (self.operation.do_operation(item.item_modulos[idx]) / 3) % self.all_divisors[idx];
-        }
-        item
+    fn inspect_item(&self, mut item : u64) -> u64{
+        self.operation.do_operation(item) / 3
     }
 
-    fn load_items(line : &str, monkey_count : usize) -> Vec<Item> {
+    fn load_items(line : &str, monkey_count : usize) -> Vec<u64> {
         line.split(':')
             .last()
             .unwrap()
             .split(',')
             .into_iter()
-            .map(|item| Item::new(item.trim().parse::<u32>().unwrap(), monkey_count))
+            .map(|item| item.trim().parse::<u64>().unwrap())
             .collect()
     }
 
@@ -103,21 +88,21 @@ impl Monkey {
         let op = splitted.next().unwrap();
         let value = splitted.next().unwrap().trim();
         match op {
-            "+" => Operation::Addition(value.parse::<u32>().unwrap()),
+            "+" => Operation::Addition(value.parse::<u64>().unwrap()),
             "*" => match value {
                         "old" => Operation::Square,
-                        x => Operation::Multiplication(x.parse::<u32>().unwrap()),
+                        x => Operation::Multiplication(x.parse::<u64>().unwrap()),
                     }
             x => panic!("Unexpected operation".to_owned() + x)
         }
     }
 
-    fn parse_last_number(line : &str) -> u32 {
+    fn parse_last_number(line : &str) -> u64 {
         line.split(' ')
             .last()
             .unwrap()
             .trim()
-            .parse::<u32>()
+            .parse::<u64>()
             .unwrap()
     }
     
@@ -138,7 +123,7 @@ impl MonkeyGroup {
             let line_idx = i * 7 + 1;
             monkeys.monkeys.push(RefCell::new(Monkey::new(&lines[line_idx..(line_idx+5)], monkey_count+1, i)));
         }
-        let all_modulos = monkeys.monkeys.iter().map(|m| m.borrow().divisible_by_condition).collect::<Vec<u32>>();
+        let all_modulos = monkeys.monkeys.iter().map(|m| m.borrow().divisible_by_condition).collect::<Vec<u64>>();
         for m in &monkeys.monkeys {
             m.borrow_mut().all_divisors = all_modulos.clone();
         }
@@ -156,14 +141,14 @@ impl MonkeyGroup {
 }
 
 
-pub fn day11_pt1 () -> u32 {
+pub fn day11_pt1 () -> u64 {
     let file = include_str!("../../inputs/day11.txt");
     let mut monkey_group = MonkeyGroup::new(&file.split('\n').collect::<Vec<&str>>());
     for i in 0..20 {
         monkey_group.play_round();
     }
     
-    let mut scores  : Vec<u32> = monkey_group.monkeys.iter().map(|monkey| monkey.borrow().inspect_count).collect();
+    let mut scores  : Vec<u64> = monkey_group.monkeys.iter().map(|monkey| monkey.borrow().inspect_count).collect();
     scores.sort();
     scores.reverse();
     scores[0] * scores[1]
