@@ -1,5 +1,7 @@
 mod problems;
 
+use std::convert::TryFrom;
+
 use problems::day1::*;
 use problems::day2::*;
 use problems::day3::*;
@@ -11,6 +13,7 @@ use problems::day8::*;
 use problems::day9::*;
 use problems::day10::*;
 use problems::day11::*;
+use problems::day12::*;
 
 
 fn main() {
@@ -39,9 +42,11 @@ fn main() {
         println!("Day 10 part 2 : {}", day10_pt2());
         println!("Day 11 part 1 : {}", day11_pt1());
         println!("Day 11 part 2 : {}", day11_pt2());
+        println!("Day 12 part 1 : {}", day12_pt1());
+        println!("Day 12 part 2 : {}", day12_pt2());
     }
     else {
-        println!("Day 11 part 1 : {}", day11_pt1());
-        println!("Day 11 part 2 : {}", day11_pt2());
+        println!("Day 12 part 1 : {}", day12_pt1());
+        println!("Day 12 part 2 : {}", day12_pt2());
     }
 }
