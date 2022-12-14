@@ -90,8 +90,7 @@ impl Grid {
         result
     }
 
-    pub fn generate_distance_map(&mut self) {
-        let start = self.get_start_point();
+    pub fn generate_distance_map(&mut self, start : Coordinates, can_move_function : &dyn Fn(i8) -> bool) {
         self.set_distance(&start, 0);
         let mut queue : VecDeque<Coordinates> = VecDeque::new();
         queue.push_back(start);
@@ -107,13 +106,21 @@ impl Grid {
                 let neighbor_height = self.get_height(&neighbor);
                 let neighbor_distance = self.get_distance(&neighbor);
 
-                if neighbor_height - current_height <= 1 &&
+                if can_move_function(neighbor_height - current_height) &&
                         neighbor_distance > new_distance {
                     self.set_distance(&neighbor, new_distance);
                     queue.push_back(neighbor);
                 }
             }
         }
+    }
+
+    pub fn climbing_comparison(value : i8) -> bool {
+        value <= 1
+    }
+
+    pub fn descending_comparison(value : i8) -> bool {
+        value >= -1
     }
 
     pub fn get_end_distance(&self) -> u16 {
@@ -143,16 +150,24 @@ pub fn day12_pt1 () -> u16 {
 // abdefghi";
     
     let mut grid = Grid::new(file);
-    grid.generate_distance_map();
-    grid.print_distances();
+    grid.generate_distance_map(grid.get_start_point(), &Grid::climbing_comparison);
     grid.get_end_distance()
 }
 
 
-pub fn day12_pt2 () -> u64 {
+pub fn day12_pt2 () -> u16 {
     let file = include_str!("../../inputs/day12.txt");
     
-    0
+    let mut grid = Grid::new(file);
+    grid.generate_distance_map(grid.get_end_point(), &Grid::descending_comparison);
+    grid.height_map
+        .iter()
+        .enumerate()
+        .filter_map(|(index, &r)| if r == 'a' { Some(index) } else { None })
+        .map(|index| grid.distance_map[index])
+        .min()
+        .unwrap()
+
 }
 
 
@@ -163,12 +178,12 @@ mod tests {
     #[test]
     fn day12_pt1_test() {
         let result = day12_pt1();
-        assert_eq!(result, 0);
+        assert_eq!(result, 472);
     }
 
     #[test]
     fn day12_pt2_test() {
         let result = day12_pt2();
-        assert_eq!(result, 23641658401); 
+        assert_eq!(result, 465); 
     }
 }
