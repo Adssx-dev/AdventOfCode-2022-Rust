@@ -14,6 +14,7 @@ use problems::day9::*;
 use problems::day10::*;
 use problems::day11::*;
 use problems::day12::*;
+use problems::day13::*;
 
 
 fn main() {
@@ -44,9 +45,11 @@ fn main() {
         println!("Day 11 part 2 : {}", day11_pt2());
         println!("Day 12 part 1 : {}", day12_pt1());
         println!("Day 12 part 2 : {}", day12_pt2());
+        println!("Day 13 part 1 : {}", day13_pt1());
+        println!("Day 13 part 2 : {}", day13_pt2());
     }
     else {
-        println!("Day 12 part 1 : {}", day12_pt1());
-        println!("Day 12 part 2 : {}", day12_pt2());
+        println!("Day 13 part 1 : {}", day13_pt1());
+        println!("Day 13 part 2 : {}", day13_pt2());
     }
 }
