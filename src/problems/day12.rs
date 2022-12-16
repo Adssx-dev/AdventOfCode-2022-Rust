@@ -1,4 +1,4 @@
-use std::collections::{VecDeque, vec_deque};
+use std::collections::{VecDeque};
 
 struct Coordinates {
     x : usize,
@@ -33,12 +33,7 @@ impl Grid {
             x : idx % self.width,
             y : idx / self.width
         }
-    }
-
-    pub fn set_distance_map(&mut self, pos : &Coordinates, distance : u16) {
-        self.distance_map[pos.y * self.width + pos.x] = distance;
-    }
-    
+    }    
 
     fn get_end_point(&self) -> Coordinates {
         let idx = self.height_map.iter().position(|c| *c == 'E').unwrap();

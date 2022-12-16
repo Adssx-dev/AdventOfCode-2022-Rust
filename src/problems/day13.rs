@@ -1,6 +1,5 @@
 use std::{
     cmp::{max, Ordering},
-    str::Chars,
 };
 
 #[derive(Debug, Clone)]
@@ -41,7 +40,7 @@ impl Element {
             Element::Scalar(s) => Element::Vector(List {
                 elements: vec![Element::Scalar(*s)],
             }),
-            Element::Vector(v) => self.clone(),
+            Element::Vector(_) => self.clone(),
         }
     }
 
@@ -108,7 +107,7 @@ impl List {
                         }
                         idx += 1;
                     }
-                    c if c >= '0' && c <= '9' => {
+                    c if ('0'..='9').contains(&c) => {
                         buffer.push(c);
                         idx += 1;
                     }
@@ -161,8 +160,8 @@ pub fn day13_pt1() -> usize {
             )
         })
         .map(|(i, e1, e2)| (i, e1.ordered(&e2)))
-        .filter(|(i, order)| *order == Ordering::Less)
-        .map(|(i, order)| i + 1)
+        .filter(|(_, order)| *order == Ordering::Less)
+        .map(|(i, _)| i + 1)
         .sum()
 }
 
@@ -172,9 +171,6 @@ pub fn day13_pt2() -> usize {
     splitted.push("[[2]]");
     splitted.push("[[6]]");
 
-    let str = "[[2]]".chars().collect::<Vec<char>>();
-    let test = Element::Vector(List::new(&str));
-
     let mut elements = splitted
         .iter()
         .filter(|line| line.trim() != "")
@@ -182,13 +178,13 @@ pub fn day13_pt2() -> usize {
         .map(|line_as_char| Element::Vector(List::new(&line_as_char)))
         .collect::<Vec<Element>>();
 
-    elements.sort_by(|a, b| a.ordered(&b));
+    elements.sort_by(|a, b| a.ordered(b));
 
     elements.iter()
         .enumerate()
         .map(|(i, elem)| (i+1, elem.is_divider()))
-        .filter(|(i, is_divider)| *is_divider)
-        .map(|(i, is_divier)| i)
+        .filter(|(_, is_divider)| *is_divider)
+        .map(|(i, _)| i)
         .product()
     
 }
@@ -200,12 +196,12 @@ mod tests {
     #[test]
     fn day13_pt1_test() {
         let result = day13_pt1();
-        assert_eq!(result, 0);
+        assert_eq!(result, 5938);
     }
 
     #[test]
     fn day13_pt2_test() {
         let result = day13_pt2();
-        assert_eq!(result, 0);
+        assert_eq!(result, 29025);
     }
 }
