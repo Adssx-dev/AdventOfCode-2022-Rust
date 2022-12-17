@@ -1,5 +1,3 @@
-use std::cell::Cell;
-
 #[derive(PartialEq, Eq, Clone, Copy)]
 struct Coordinates {
     x : usize,
@@ -168,11 +166,22 @@ impl Grid {
 
     pub fn drop_all_sand(&mut self, initial_position : Coordinates) -> u32 {
         let mut count : u32 = 0;
-        while let Some(_) = self.drop_sand(initial_position) {
+        while let Some(pos) = self.drop_sand(initial_position) {
             count += 1;
+            if pos == initial_position {
+                break;
+            }
         }
         count
     }
+
+    pub fn set_floor(&mut self, y_position : usize) {
+        for x in 0..self.width {
+            let idx = self.get_index(&Coordinates{x, y : y_position });
+            self.cells[idx] = CellType::Wall;
+        }
+    }
+
 }
 
 pub fn day14_pt1() -> u32{
@@ -185,14 +194,39 @@ pub fn day14_pt1() -> u32{
         .map(|line| line.get_all_points())
         .flatten()
         .collect::<Vec<Coordinates>>());
-
+    let display = false ;
+    if display {
+        grid.display();
+    }
     grid.drop_all_sand(Coordinates {x : 500, y : 0})
-    //grid.display();
 }
 
-pub fn day14_pt2() -> usize {
+pub fn day14_pt2() -> u32 {
     let file = include_str!("../../inputs/day14.txt");
-    0
+
+    let mut grid = Grid::new(1000, 200);
+
+    let walls_coordinates = file.split('\n')
+        .map(|line_str| Line::new(line_str))
+        .map(|line| line.get_all_points())
+        .flatten()
+        .collect::<Vec<Coordinates>>(); 
+    
+    let max_y = walls_coordinates.iter()
+        .map(|c| c.y)
+        .max()
+        .unwrap();
+
+    grid.set_floor(max_y + 2);
+
+    grid.set_walls(&walls_coordinates);
+
+    let display = false ;
+    if display {
+        grid.display();
+    }
+    
+    grid.drop_all_sand(Coordinates {x : 500, y : 0})
 }
 
 #[cfg(test)]
@@ -202,12 +236,12 @@ mod tests {
     #[test]
     fn day14_pt1_test() {
         let result = day14_pt1();
-        assert_eq!(result, 0);
+        assert_eq!(result, 755);
     }
 
     #[test]
     fn day14_pt2_test() {
         let result = day14_pt2();
-        assert_eq!(result, 0);
+        assert_eq!(result, 29805);
     }
 }
