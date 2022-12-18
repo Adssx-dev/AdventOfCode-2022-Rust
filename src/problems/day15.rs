@@ -1,6 +1,6 @@
 use std::cmp::{min, max};
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 struct Coordinates {
     x : i32,
     y : i32
@@ -51,6 +51,35 @@ impl Sensor {
         let range_2 = self.position.x + dist_x;
         (min(range_1, range_2), max(range_1, range_2))
     }
+
+    pub fn contour_coordinates(&self) -> Vec<Coordinates> {
+        let mut result : Vec<Coordinates> = vec!();
+        let distance = self.beacon_distance();
+        let mut x = self.position.x - distance - 1;
+        let mut y = self.position.y;
+
+        while y < self.position.y + distance + 1 {
+            x += 1;
+            y += 1;
+            result.push(Coordinates{x, y});
+        }
+        while y > self.position.y {
+            x += 1;
+            y -= 1;
+            result.push(Coordinates{x, y});
+        }
+        while x > self.position.x {
+            x -= 1;
+            y -= 1;
+            result.push(Coordinates{x, y});
+        }
+        while y > self.position.y {
+            x -= 1;
+            y += 1;
+            result.push(Coordinates{x, y});
+        }
+        result
+    }
 }
 
 
@@ -80,10 +109,23 @@ pub fn day15_pt1() -> usize {
 
 }
 
-pub fn day15_pt2() -> u32 {
+pub fn day15_pt2() -> i64 {
     let file = include_str!("../../inputs/day15.txt");
 
-    0
+    let sensors : Vec<Sensor> = file.split('\n')
+        .map(|line| Sensor::new(line))
+        .collect();
+
+    let possible_candidates = sensors.iter()
+        .map(|sensor| sensor.contour_coordinates())
+        .flatten()
+        .filter(|point| point.x > 0 && point.x < 4000000 && point.y > 0 && point.y < 4000000)
+        .filter(|point| sensors.iter()
+            .all(|sensor| sensor.position.distance(point) > sensor.beacon_distance()))
+        .next()
+        .unwrap();
+    
+    possible_candidates.x as i64 * 4000000 + possible_candidates.y as i64
 }
 
 #[cfg(test)]
@@ -93,12 +135,12 @@ mod tests {
     #[test]
     fn day15_pt1_test() {
         let result = day15_pt1();
-        assert_eq!(result, 755);
+        assert_eq!(result, 5176944);
     }
 
     #[test]
     fn day15_pt2_test() {
         let result = day15_pt2();
-        assert_eq!(result, 29805);
+        assert_eq!(result, 13350458933732);
     }
 }

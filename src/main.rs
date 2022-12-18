@@ -49,8 +49,8 @@ fn main() {
         println!("Day 13 part 2 : {}", day13_pt2());
         println!("Day 14 part 1 : {}", day14_pt1());
         println!("Day 14 part 2 : {}", day14_pt2());
-        println!("Day 15 part 1 : {}", day15_pt1());
-        println!("Day 15 part 2 : {}", day15_pt2());
+        //println!("Day 15 part 1 : {}", day15_pt1()); // Too long (5 secs)
+        //println!("Day 15 part 2 : {}", day15_pt2()); // too long (15 secs)
     }
     else {
         println!("Day 15 part 1 : {}", day15_pt1());
