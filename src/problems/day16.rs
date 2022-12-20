@@ -190,15 +190,11 @@ impl Solver {
     }
 
     fn get_best_candidate(&self) -> Option<SolutionCandidate> {
-        let a = self.candidates
+        self.candidates
             .iter()
             .filter(|candidate| candidate.actions.len() < 30)
-            .max_by(|e1, e2| e1.released_pressure.cmp(&e2.released_pressure));
-        match a {
-            Some(c) => Some(c.clone()),
-            None => None
-        }
-
+            .max_by(|e1, e2| e1.released_pressure.cmp(&e2.released_pressure))
+            .map(|c| c.clone())
     }
 }
 
