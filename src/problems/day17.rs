@@ -54,7 +54,8 @@ impl Piece {
 struct Grid {
     lines : Vec<[bool; 7]>,
     winds : Vec<Direction>,
-    wind_index : usize
+    wind_index : usize,
+    cycle_candidates : Vec<CycleCandidate>
 }
 
 impl Grid {
@@ -112,13 +113,72 @@ impl Grid {
         collide
     }
 
-    fn stop_piece(&mut self, piece : &Piece) {
+    fn stop_piece(&mut self, piece : &Piece){
+        let mut affected_rows = vec!();
         for sub_piece in piece.parts_positions {
             match sub_piece {
                 None => {},
-                Some(coords) => self.set_cell(Coordinates{x : piece.position.x + coords.x, y : piece.position.y + coords.y}, true)
+                Some(coords) => {
+                    let y_position = piece.position.y + coords.y;
+                    self.set_cell(Coordinates{x : piece.position.x + coords.x, y : y_position}, true);
+                    if y_position > 0 && !affected_rows.contains(&y_position) {
+                        affected_rows.push(y_position);
+                    }
+                }
             }
         }
+        self.find_cycle_candidates(&affected_rows);
+        self.filter_cycle_candidates();
+        let best_candidate = self.find_cycle();
+        if let Some(cand) = best_candidate {
+            let x = 42;
+            x;
+        }
+    }
+
+    fn find_cycle_candidates(&mut self, last_rows : &[usize]) {
+        for row in last_rows {
+            let row_array = self.lines[*row];
+            for i in 0..(row - 1) {
+                if row_array == self.lines[i] {
+                    self.cycle_candidates.push(CycleCandidate{ start_index: i, length: row - i });
+                }
+            }
+        }
+    }
+
+    fn filter_cycle_candidates(&mut self) {
+        self.cycle_candidates = self.cycle_candidates
+            .iter()
+            .filter(|candidate| candidate.length > 100)
+            .filter(|candidate| {
+                let start = candidate.start_index + candidate.length;
+                let end = self.top_line_index().unwrap();
+                let mut coherent = true;
+                for i in start..end {
+                    if self.lines[i] != self.lines[i - candidate.length] {
+                        coherent = false;
+                        break;
+                    }
+                }
+                coherent
+            })
+            .cloned()
+            .collect();
+        if self.cycle_candidates.len() == 1 {
+            let mut x = 0;
+            x = x + 1;
+        }
+    }
+
+    fn find_cycle(&self) -> Option<CycleCandidate> {
+        let mut good_candidates = self.cycle_candidates.iter()
+            .filter(|candidate| candidate.start_index + 2 * candidate.length < self.lines.len())
+            .cloned();
+        
+        let c = good_candidates.next();
+        c
+
     }
 
     fn get_cell(&mut self, position : Coordinates) -> bool {
@@ -184,6 +244,12 @@ impl Grid {
 }
 
 #[derive(Clone, Copy, Debug)]
+struct CycleCandidate{
+    start_index : usize,
+    length : usize
+}
+
+#[derive(Clone, Copy, Debug)]
 enum Direction {
     Left,
     Right
@@ -244,7 +310,8 @@ pub fn day17_pt1() -> usize {
     let mut grid = Grid {
         lines : vec!(),
         winds : winds,
-        wind_index : 0
+        wind_index : 0,
+        cycle_candidates : vec!()
     };
 
     for i in 0..2022 {
@@ -317,7 +384,8 @@ pub fn day17_pt2() -> usize {
     let mut grid = Grid {
         lines : vec!(),
         winds : winds,
-        wind_index : 0
+        wind_index : 0,
+        cycle_candidates : vec!()
     };
 
     for i in 0..100000000 {
@@ -341,7 +409,7 @@ mod tests {
     #[test]
     fn day17_pt1_test() {
         let result = day17_pt1();
-        assert_eq!(result, 5176944);
+        assert_eq!(result, 3048);
     }
 
     #[test]
